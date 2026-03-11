@@ -6,7 +6,7 @@ from lotto_scraper import fetch_today_results, get_history
 
 FONT_REG = base64.b64encode(open("/usr/share/fonts/truetype/noto/NotoSansThai-Regular.ttf","rb").read()).decode()
 FONT_BOLD = base64.b64encode(open("/usr/share/fonts/truetype/noto/NotoSansThai-Bold.ttf","rb").read()).decode()
-CARD_SCRIPT = "/tmp/gen_lotto_card.js"
+CARD_SCRIPT = "/tmp/gen_lotto_card3.js"
 STATS_FILE = os.path.join(os.path.dirname(__file__), "lotto_stats.json")
 
 TH_DAYS = ["จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์","อาทิตย์"]
