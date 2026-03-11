@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""เช็คผลหวยแต่ละรอบ → gen card สรุป → ส่งกลุ่ม"""
+"""เช็คผลหวยแต่ละรอบ → เทียบกับ predictions → gen card สถิติ → ส่งกลุ่ม"""
 import sys, os, subprocess, json, datetime, requests, base64
 
 LOTTO_TOKEN = "8077699310:AAEJHmRk9pxAdUZv98PfazXhqcoz-hxJZBY"
@@ -7,6 +7,8 @@ GROUP_ID    = "-1003869825051"
 SCRIPT_DIR  = os.path.dirname(os.path.abspath(__file__))
 WORKSPACE   = "/root/.openclaw/workspace"
 PRED_FILE   = os.path.join(SCRIPT_DIR, "lotto_predictions.json")
+STATS_FILE  = os.path.join(SCRIPT_DIR, "lotto_stats.json")
+STATS_CARD_SCRIPT = "/tmp/gen_lotto_stats_card.js"
 FONT_REG    = base64.b64encode(open("/usr/share/fonts/truetype/noto/NotoSansThai-Regular.ttf","rb").read()).decode()
 FONT_BOLD   = base64.b64encode(open("/usr/share/fonts/truetype/noto/NotoSansThai-Bold.ttf","rb").read()).decode()
 
@@ -38,6 +40,135 @@ def load_predictions():
         with open(PRED_FILE) as f:
             return json.load(f)
     return {}
+
+def load_stats():
+    if os.path.exists(STATS_FILE):
+        with open(STATS_FILE) as f:
+            return json.load(f)
+    return []
+
+def save_stats(stats):
+    with open(STATS_FILE, "w") as f:
+        json.dump(stats, f, ensure_ascii=False, indent=2)
+
+def calc_stats(stats, lotto_type, days):
+    """คำนวณ stats X วันย้อนหลังสำหรับ lotto_type"""
+    cutoff = (datetime.date.today() - datetime.timedelta(days=days)).strftime("%Y-%m-%d")
+    entries = [s for s in stats if s["lotto"] == lotto_type and s["date"] >= cutoff]
+    total = len(entries)
+    correct_2bot = sum(1 for e in entries if e.get("hit_2bot"))
+    pct = round(correct_2bot / total * 100) if total > 0 else 0
+    return {"correct_2bot": correct_2bot, "total": total, "pct": pct}
+
+def record_stats(lotto_type, pred, actual):
+    """บันทึกผลเทียบลง lotto_stats.json"""
+    stats = load_stats()
+    today_str = datetime.date.today().strftime("%Y-%m-%d")
+
+    hit_3top = pred.get("3top") == actual.get("3top")
+    hit_2bot = pred.get("2bot") == actual.get("2bot")
+
+    entry = {
+        "date": today_str,
+        "lotto": lotto_type,
+        "predicted_3top": pred.get("3top", "?"),
+        "actual_3top": actual.get("3top", "?"),
+        "predicted_2bot": pred.get("2bot", "?"),
+        "actual_2bot": actual.get("2bot", "?"),
+        "hit_3top": hit_3top,
+        "hit_2bot": hit_2bot,
+    }
+
+    # Replace existing entry for same date+lotto
+    stats = [s for s in stats if not (s["date"] == today_str and s["lotto"] == lotto_type)]
+    stats.append(entry)
+    save_stats(stats)
+
+    return hit_3top, hit_2bot, stats
+
+def gen_stats_card(lotto_type, lotto_name, pred, actual, hit_3top, hit_2bot, stats, output):
+    """gen card สถิติด้วย gen_lotto_stats_card.js"""
+    today = datetime.date.today().strftime("%-d/%m/%Y")
+    stats_7d = calc_stats(stats, lotto_type, 7)
+    stats_30d = calc_stats(stats, lotto_type, 30)
+
+    payload = {
+        "date": today,
+        "lotto_name": lotto_name,
+        "pred": {"3top": pred.get("3top","?"), "2bot": pred.get("2bot","?")},
+        "actual": {"3top": actual.get("3top","?"), "2bot": actual.get("2bot","?")},
+        "hit_3top": hit_3top,
+        "hit_2bot": hit_2bot,
+        "stats_7d": stats_7d,
+        "stats_30d": stats_30d,
+        "output": output,
+    }
+
+    r = subprocess.run(
+        ["node", STATS_CARD_SCRIPT, FONT_REG, FONT_BOLD, json.dumps(payload, ensure_ascii=False)],
+        capture_output=True, text=True
+    )
+    if r.returncode != 0:
+        print(f"stats card error: {r.stderr[:300]}")
+        return None
+    return output
+
+def send_photo(path, caption):
+    with open(path,"rb") as f:
+        resp = requests.post(f"https://api.telegram.org/bot{LOTTO_TOKEN}/sendPhoto",
+            data={"chat_id":GROUP_ID,"caption":caption},
+            files={"photo":f}, timeout=15)
+    print(f"telegram send: {resp.status_code}")
+
+def check(lotto_type, mock_data=None):
+    today = datetime.date.today()
+    date_str = today.strftime("%-d %B %Y")
+    today_str = today.strftime("%Y-%m-%d")
+    lotto_name = LOTTO_MAP.get(lotto_type, lotto_type)
+
+    # Get actual results
+    if mock_data:
+        top3, bot2 = mock_data["3top"], mock_data["2bot"]
+    else:
+        print(f"Checking {lotto_name}...")
+        text = gemini_fetch(lotto_name, date_str)
+        top3, bot2 = parse_result(text)
+
+    if not top3:
+        print(f"No result found for {lotto_name}")
+        return
+
+    actual = {"3top": top3, "2bot": bot2}
+
+    # Load prediction
+    preds = load_predictions()
+    pred = preds.get(today_str, {}).get(lotto_type, {"3top": "?", "2bot": "?"})
+
+    # Record stats
+    hit_3top, hit_2bot, all_stats = record_stats(lotto_type, pred, actual)
+    print(f"{lotto_name}: ใบ้ {pred.get('3top','?')}/{pred.get('2bot','?')} vs ออก {top3}/{bot2} | 3top:{'WIN' if hit_3top else 'MISS'} 2bot:{'WIN' if hit_2bot else 'MISS'}")
+
+    # Gen result card (existing)
+    result_output = f"{WORKSPACE}/card_result_{lotto_type}.png"
+    gen_result_card(lotto_type, lotto_name, pred, actual, result_output)
+
+    # Gen stats card
+    stats_output = f"{WORKSPACE}/card_lotto_stats_{lotto_type}.png"
+    gen_stats_card(lotto_type, lotto_name, pred, actual, hit_3top, hit_2bot, all_stats, stats_output)
+
+    if not mock_data:
+        # Send result card
+        caption = f"ผล{lotto_name}\nออก: {top3} / {bot2}"
+        if hit_2bot:
+            caption += "\n2 ตัวล่าง WIN!"
+        send_photo(result_output, caption)
+
+        # Send stats card
+        stats_7d = calc_stats(all_stats, lotto_type, 7)
+        stats_caption = f"สถิติ{lotto_name}\n7 วัน: {stats_7d['correct_2bot']}/{stats_7d['total']} ({stats_7d['pct']}%)"
+        send_photo(stats_output, stats_caption)
+
+    print(f"done: {lotto_name}")
 
 def gen_result_card(lotto_type, lotto_name, pred, actual, output):
     hit3 = pred.get("3top") == actual.get("3top")
@@ -118,39 +249,30 @@ body{{width:540px;font-family:'NT',sans-serif;background:#08080f}}
         f.write(js)
     subprocess.run(["node","/tmp/result_card.js"], capture_output=True)
 
-def send_photo(path, caption):
-    with open(path,"rb") as f:
-        requests.post(f"https://api.telegram.org/bot{LOTTO_TOKEN}/sendPhoto",
-            data={"chat_id":GROUP_ID,"caption":caption},
-            files={"photo":f}, timeout=15)
-
-def check(lotto_type):
-    today = datetime.date.today()
-    date_str = today.strftime("%-d %B %Y")
-    lotto_name = LOTTO_MAP.get(lotto_type, lotto_type)
-
-    print(f"Checking {lotto_name}...")
-    text = gemini_fetch(lotto_name, date_str)
-    top3, bot2 = parse_result(text)
-
-    if not top3:
-        print(f"No result found for {lotto_name}")
-        return
-
-    actual = {"3top": top3, "2bot": bot2}
-    preds = load_predictions()
-    today_str = today.strftime("%Y-%m-%d")
-    pred = preds.get(today_str, {}).get(lotto_type, {"3top":"?","2bot":"?"})
-
-    output = f"{WORKSPACE}/card_result_{lotto_type}.png"
-    gen_result_card(lotto_type, lotto_name, pred, actual, output)
-
-    caption = f"ผล{lotto_name}\nออก: {top3} / {bot2}"
-    if pred.get("2bot") == bot2:
-        caption += "\n2 ตัวล่าง WIN!"
-    send_photo(output, caption)
-    print(f"done: {lotto_name} {top3}/{bot2}")
-
 if __name__ == "__main__":
     lotto = sys.argv[1] if len(sys.argv) > 1 else "hanoi"
-    check(lotto)
+
+    # Mock mode for testing
+    if "--mock" in sys.argv:
+        # Create mock prediction
+        today_str = datetime.date.today().strftime("%Y-%m-%d")
+        preds = load_predictions()
+        if today_str not in preds or lotto not in preds.get(today_str, {}):
+            preds.setdefault(today_str, {})[lotto] = {"3top": "165", "2bot": "07", "run": "0"}
+            with open(PRED_FILE, "w") as f:
+                json.dump(preds, f, ensure_ascii=False, indent=2)
+            print(f"Mock prediction saved: {today_str}/{lotto}")
+
+        # Mock actual result (2bot matches for test)
+        mock = {"3top": "482", "2bot": "07"}
+        check(lotto, mock_data=mock)
+
+        # Copy stats card for test output
+        import shutil
+        src = f"{WORKSPACE}/card_lotto_stats_{lotto}.png"
+        dst = f"{WORKSPACE}/card_lotto_stats_test.png"
+        if os.path.exists(src):
+            shutil.copy(src, dst)
+            print(f"test output: {dst}")
+    else:
+        check(lotto)

@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "date": "2026-03-11",
+    "lotto": "hanoi",
+    "predicted_3top": "165",
+    "actual_3top": "482",
+    "predicted_2bot": "07",
+    "actual_2bot": "07",
+    "hit_3top": false,
+    "hit_2bot": true
+  }
+]

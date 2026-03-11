@@ -16,12 +16,26 @@ def today_th():
     day = TH_DAYS[d.weekday()]
     return f"{day} {d.strftime('%-d/%m/%Y')}"
 
+def save_predictions(predictions_map, target_date):
+    """บันทึก predictions ลง lotto_predictions.json"""
+    pred_file = os.path.join(os.path.dirname(__file__), "lotto_predictions.json")
+    existing = {}
+    if os.path.exists(pred_file):
+        with open(pred_file) as f:
+            existing = json.load(f)
+    date_key = target_date.strftime("%Y-%m-%d")
+    existing[date_key] = predictions_map
+    with open(pred_file, "w") as f:
+        json.dump(existing, f, ensure_ascii=False, indent=2)
+    print(f"predictions saved: {date_key} -> {list(predictions_map.keys())}")
+
 def gen_tips_card(output=None):
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
     day = TH_DAYS[tomorrow.weekday()]
     date_str = f"{day} {tomorrow.strftime('%-d/%m/%Y')}"
 
     lottos = []
+    predictions_map = {}
     for t in ["hanoi", "laos"]:
         r = analyze(t)
         lottos.append({
@@ -33,6 +47,11 @@ def gen_tips_card(output=None):
             ],
             "reason": r["reason"],
         })
+        predictions_map[t] = {
+            "3top": r["3top"],
+            "2bot": r["2bot"],
+            "run": r["run"],
+        }
 
     if output is None:
         output = f"/root/.openclaw/workspace/card_lotto_{tomorrow.strftime('%a').lower()}.png"
@@ -45,6 +64,9 @@ def gen_tips_card(output=None):
         "output": output,
         "lottos": lottos,
     }
+
+    # Save predictions before generating card
+    save_predictions(predictions_map, tomorrow)
 
     r = subprocess.run(
         ["node", CARD_SCRIPT, FONT_REG, FONT_BOLD, json.dumps(payload, ensure_ascii=False)],
