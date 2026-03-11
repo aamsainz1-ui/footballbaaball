@@ -1,0 +1,206 @@
+[
+  {
+    "date": "2026-02-25",
+    "home": "อตาลันต้า",
+    "away": "ดอร์ทมุนด์",
+    "prediction": "อตาลันต้า vs ดอร์ทมุนด์",
+    "actual": "",
+    "correct": null
+  },
+  {
+    "date": "2026-02-25",
+    "home": "เปแอสเช",
+    "away": "โมนาโก",
+    "prediction": "เปแอสเช vs โมนาโก",
+    "actual": "",
+    "correct": null
+  },
+  {
+    "date": "2026-02-26",
+    "home": "อตาลันต้า",
+    "away": "ดอร์ทมุนด์",
+    "prediction": "อตาลันต้า vs ดอร์ทมุนด์",
+    "actual": "อตาลันต้า 4-1 ดอร์ทมุนด์",
+    "correct": null
+  },
+  {
+    "date": "2026-02-26",
+    "home": "ยูเว่",
+    "away": "Galatasaray",
+    "prediction": "ยูเว่ vs Galatasaray",
+    "actual": "ยูเว่ 3-2 Galatasaray",
+    "correct": null
+  },
+  {
+    "date": "2026-03-05",
+    "home": "สเปอร์ส",
+    "away": "คริสตัล พาเลซ",
+    "prediction": "สเปอร์ส vs คริสตัล พาเลซ",
+    "actual": "",
+    "correct": null
+  },
+  {
+    "date": "2026-03-05",
+    "home": "O'Higgins",
+    "away": "Tolima",
+    "prediction": "O'Higgins vs Tolima",
+    "actual": "O'Higgins 1-0 Tolima",
+    "correct": null
+  },
+  {
+    "date": "2026-03-06",
+    "home": "เซลต้า บีโก้",
+    "away": "เรอัลมาดริด",
+    "prediction": "เซลต้า บีโก้ vs เรอัลมาดริด",
+    "actual": "",
+    "correct": null
+  },
+  {
+    "date": "2026-03-06",
+    "home": "นาโปลี",
+    "away": "โตริโน่",
+    "prediction": "นาโปลี vs โตริโน่",
+    "actual": "",
+    "correct": null
+  },
+  {
+    "date": "2026-03-06",
+    "home": "บาเยิร์น",
+    "away": "มึนเช่นกลัดบัค",
+    "prediction": "บาเยิร์น vs มึนเช่นกลัดบัค",
+    "actual": "",
+    "correct": null
+  },
+  {
+    "date": "2026-03-06",
+    "home": "เปแอสเช",
+    "away": "โมนาโก",
+    "prediction": "เปแอสเช vs โมนาโก",
+    "actual": "",
+    "correct": null
+  },
+  {
+    "date": "2026-03-09",
+    "home": "บีญาร์เรอัล",
+    "away": "Elche",
+    "prediction": "บีญาร์เรอัล vs Elche",
+    "actual": "",
+    "correct": null
+  },
+  {
+    "date": "2026-03-09",
+    "home": "เกตาเฟ่",
+    "away": "เรอัล เบติส",
+    "prediction": "เกตาเฟ่ vs เรอัล เบติส",
+    "actual": "",
+    "correct": null
+  },
+  {
+    "date": "2026-03-08",
+    "home": "บีญาร์เรอัล",
+    "away": "Elche",
+    "prediction": "บีญาร์เรอัล ชนะ",
+    "pick_type": "1X2",
+    "pick_value": "HOME",
+    "confidence": 2,
+    "confidence_stars": "★★",
+    "league": "PD",
+    "actual": "บีญาร์เรอัล 2-1 Elche",
+    "correct": true
+  },
+  {
+    "date": "2026-03-08",
+    "home": "เกตาเฟ่",
+    "away": "เรอัล เบติส",
+    "prediction": "เรอัล เบติส ชนะ",
+    "pick_type": "1X2",
+    "pick_value": "AWAY",
+    "confidence": 1,
+    "confidence_stars": "★",
+    "league": "PD",
+    "actual": "เกตาเฟ่ 2-0 เรอัล เบติส",
+    "correct": false
+  },
+  {
+    "date": "2026-03-09",
+    "home": "เซบีย่า",
+    "away": "ราโย บาเยกาโน่",
+    "prediction": "เซบีย่า ไม่แพ้",
+    "pick_type": "1X2",
+    "pick_value": "DRAW_NO_BET_HOME",
+    "confidence": 1,
+    "confidence_stars": "★",
+    "league": "PD",
+    "kick": "00:30",
+    "actual": "เซบีย่า 1-1 ราโย บาเยกาโน่",
+    "correct": true
+  },
+  {
+    "date": "2026-03-08",
+    "home": "บีญาร์เรอัล",
+    "away": "Elche",
+    "prediction": "บีญาร์เรอัล -0.5/1",
+    "pick_type": "HANDICAP",
+    "pick_value": "HOME_-0.5/1",
+    "confidence": 2,
+    "confidence_stars": "★★",
+    "league": "PD",
+    "kick": "20:00",
+    "actual": "บีญาร์เรอัล 2-1 Elche",
+    "correct": null
+  },
+  {
+    "date": "2026-03-08",
+    "home": "เกตาเฟ่",
+    "away": "เรอัล เบติส",
+    "prediction": "เรอัล เบติส -0.5",
+    "pick_type": "HANDICAP",
+    "pick_value": "AWAY_-0.5",
+    "confidence": 1,
+    "confidence_stars": "★",
+    "league": "PD",
+    "kick": "22:15",
+    "actual": "เกตาเฟ่ 2-0 เรอัล เบติส",
+    "correct": null
+  },
+  {
+    "date": "2026-03-09",
+    "home": "เซบีย่า",
+    "away": "ราโย บาเยกาโน่",
+    "prediction": "สูง 2.5",
+    "pick_type": "TOTAL",
+    "pick_value": "OVER_2.5",
+    "confidence": 1,
+    "confidence_stars": "★",
+    "league": "PD",
+    "kick": "00:30",
+    "actual": "เซบีย่า 1-1 ราโย บาเยกาโน่",
+    "correct": null
+  },
+  {
+    "date": "2026-03-12",
+    "home": "เลเวอร์คูเซ่น",
+    "away": "อาร์เซนอล",
+    "prediction": "อาร์เซนอล -0.5",
+    "pick_type": "HANDICAP",
+    "pick_value": "AWAY_-0.5",
+    "confidence": 1,
+    "confidence_stars": "★",
+    "league": "CL",
+    "actual": "",
+    "correct": null
+  },
+  {
+    "date": "2026-03-12",
+    "home": "เปแอสเช",
+    "away": "เชลซี",
+    "prediction": "ต่ำ 2.5",
+    "pick_type": "TOTAL",
+    "pick_value": "UNDER_2.5",
+    "confidence": 1,
+    "confidence_stars": "★",
+    "league": "CL",
+    "actual": "",
+    "correct": null
+  }
+]
