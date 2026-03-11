@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Gen 4 lotto cards per day: หุ้นไทยเย็น, ฮานอยพิเศษ, ฮานอยปกติ, ลาวพัฒนา"""
+"""Gen lotto cards per day: หุ้นไทยเย็น, ฮานอยพิเศษ, มาเลย์, ลาวพัฒนา, ลาวสตาร์, ฮานอยปกติ, ฮานอย VIP"""
 import subprocess, json, os, base64, datetime, sys
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -14,12 +14,15 @@ BG_IMG_PATH = "/tmp/char_wide.jpg"
 
 TH_DAYS = ["จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์", "อาทิตย์"]
 
-# 4 lotto types to generate
+# lotto types to generate (ยกเว้นหุ้นไทยเช้า/เที่ยง/บ่าย และหวยหุ้นนอก)
 LOTTO_CONFIG = [
-    {"type": "หุ้นไทยเย็น", "key": "stock_evening", "time": "16:30", "brand": "บ้านหวย888", "lotto_name": "🇹🇭 หุ้นไทยเย็น"},
-    {"type": "ฮานอยพิเศษ", "key": "hanoi_special", "time": "17:30", "brand": "บ้านหวย888", "lotto_name": "🇻🇳 ฮานอยพิเศษ"},
-    {"type": "ฮานอยปกติ",  "key": "hanoi",         "time": "18:30", "brand": "บ้านหวย888", "lotto_name": "🇻🇳 ฮานอยปกติ"},
-    {"type": "ลาวพัฒนา",   "key": "laos",          "time": "18:30", "brand": "บ้านหวย888", "lotto_name": "🇱🇦 ลาวพัฒนา"},
+    {"type": "หุ้นไทยเย็น", "key": "stock_evening",  "time": "16:30", "lotto_name": "หุ้นไทยเย็น"},
+    {"type": "ฮานอยพิเศษ", "key": "hanoi_special",   "time": "17:30", "lotto_name": "ฮานอยพิเศษ"},
+    {"type": "หวยมาเลย์",   "key": "malaysia",        "time": "18:00", "lotto_name": "หวยมาเลย์"},
+    {"type": "ลาวพัฒนา",   "key": "laos_patthana",   "time": "18:30", "lotto_name": "ลาวพัฒนา"},
+    {"type": "ลาวสตาร์",   "key": "laos_star",       "time": "18:30", "lotto_name": "ลาวสตาร์"},
+    {"type": "ฮานอยปกติ",  "key": "hanoi",           "time": "18:30", "lotto_name": "ฮานอยปกติ"},
+    {"type": "ฮานอย VIP",  "key": "hanoi_vip",       "time": "19:30", "lotto_name": "ฮานอย VIP"},
 ]
 
 
@@ -147,7 +150,7 @@ def main():
     # Save predictions
     save_predictions(predictions_map, target_date)
 
-    print(f"\n🎯 Generated {len(cards)}/4 cards")
+    print(f"\n🎯 Generated {len(cards)}/{len(LOTTO_CONFIG)} cards")
     return cards
 
 
