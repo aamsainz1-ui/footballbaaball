@@ -38,7 +38,14 @@ elif mode == "football_stats":
     send_photo(BAABALL_TOKEN, f"{WORKSPACE}/card_stats_today.png", f"ผลบอลคืนที่ผ่านมา — Baaball\n{today_th()}")
 
 elif mode == "lotto":
-    subprocess.run(["python3", f"{SCRIPT_DIR}/lotto_daily.py", "--tips"], capture_output=True)
-    cards = sorted(glob.glob(f"{WORKSPACE}/card_lotto_*.png"), key=os.path.getmtime, reverse=True)
-    if cards:
-        send_photo(LOTTO_TOKEN, cards[0], f"เลขเด็ดวันนี้ — บ้านหวย888\n{today_th()}")
+    subprocess.run(["python3", f"{SCRIPT_DIR}/gen_lotto_all.py"], capture_output=True)
+    lotto_labels = {
+        "stock_evening": "🇹🇭 หุ้นไทยเย็น",
+        "hanoi_special": "🇻🇳 ฮานอยพิเศษ",
+        "hanoi": "🇻🇳 ฮานอยปกติ",
+        "laos": "🇱🇦 ลาวพัฒนา",
+    }
+    for key, label in lotto_labels.items():
+        card_path = f"{WORKSPACE}/card_lotto_{key}.png"
+        if os.path.exists(card_path):
+            send_photo(LOTTO_TOKEN, card_path, f"{label} — บ้านหวย888\n{today_th()}")

@@ -1,6 +1,8 @@
 const { chromium } = require('/usr/lib/node_modules/openclaw/node_modules/playwright-core');
-const [fontReg, fontBold, bgImg, jsonArg] = process.argv.slice(2);
-const data = JSON.parse(jsonArg);
+const fs = require('fs');
+
+// Read args from file (written by gen_lotto_all.py)
+const { fontReg, fontBold, bgImg, data } = JSON.parse(fs.readFileSync('/tmp/lotto_card_args.json', 'utf8'));
 
 const html = `<!DOCTYPE html><html><head><meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@700;800&family=Charm:wght@700&display=swap" rel="stylesheet">
